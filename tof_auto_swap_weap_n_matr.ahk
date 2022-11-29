@@ -4,7 +4,6 @@
 
 SetTitleMatchMode, 2
 #If WinActive("Tower of Fantasy")
-#NoEnv
 SendMode, Input
 SetWorkingDir, %A_ScriptDir%
 
