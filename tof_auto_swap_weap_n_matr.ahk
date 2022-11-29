@@ -3,7 +3,7 @@
 ; Discord: PYRA#4480
 
 SetTitleMatchMode, 2
-#If WinActive("Tower of Fantasy")
+#IfWinActive, ahk_exe QRSL.exe
 SendMode, Input
 SetWorkingDir, %A_ScriptDir%
 
