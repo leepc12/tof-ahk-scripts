@@ -1,63 +1,62 @@
-; Weapon/Matrice Swapper v4.0
+; Weapon/Matrice Swapper v4.1
 ; Written by Py-ra (Server: Nightfall, Crew: Evil)
 ; Discord: PYRA#4480
 ;
 ; This script works with 16:9 resolution only
-; Press ESC if you want to stop any hotkey
+; Press ESC if you want to stop a running hotkey
 
-SetTitleMatchMode, 2
 #IfWinActive, ahk_exe QRSL.exe
 SendMode, Input
 SetWorkingDir, %A_ScriptDir%
 
-;;;; Run weap/matrice/equipment swap combo
+;;;; Run weapon/matrice/equipment swap combo
 ; - F3: Run combo1
 ; - F4: Run combo2
 ;
-; Search for "F3::" and "F4::" and carefully look at code lines
-; Build your own combos using these functions
-; Code lines are very readable and pretty self-explainary
+; Search for "F3::" and "F4::" in this script and build your own combo
+; using functions. Code lines are very readable and self-explanatory
 
-;;;; Matrices
-; - F5: Swap MatriceIds1 for a selected weapon
-; - F6: Swap MatriceIds2 for a selected weapon
-; - Ctrl+F5: Equip MatriceIds1 for a selected weapon
-; - Ctrl+F6: Equip MatriceIds2 for a selected weapon
-; - F7: Equip/Swap-to Recommended Matrix Set 1
+;;;; Swap-to/Equip matrices
+; - F5: Swap to Matrices1 for a selected weapon
+; - F6: Swap to Matrices2 for a selected weapon
+; - Ctrl+F5: Equip Matrices1 for a selected weapon
+; - Ctrl+F6: Equip Matrices2 for a selected weapon
+; - F7: Equip (or swap to) Recommended Matrix Set 1
 ;
-; MatriceIds1 and MatriceIds2 are 1-based indices of matrice
+; Matrices1 and Matrices2 are 1-based indices of matrice
 ; location on the game UI
 ; 1    2    3
 ; 4    5    6
 ; ...
-MatriceIds1 := [3,1,2,1] ; 4p-Shiro
-MatriceIds2 := [4,3,3,2] ; 4p-Lin
-
-;;;; Relics
-; - F8: Open Relic Set2 and scroll to right
-; - Ctrl+F8: Open Relic Set3 and scroll to right
+Matrices1 := [3,1,2,1] ; Edit this array for F5
+Matrices2 := [4,3,3,2] ; Edit this array for F6
 
 ;;;; Simulacra skin
-; - F9: Change to SimulacraId1's skin
-; - F10: Change to SimulacraId2's skin
+; - F9: Change to Simulacra1's skin
+; - F10: Change to Simulacra2's skin
 ;
-; SimulacraId1 and SimulacraId2 are 1-based indices of Simulacra
+; You can also use either key to remove curent Simulacra skin
+;
+; Simulacra1 and Simulacra2 are 1-based indices of Simulacra
 ; location on the game UI.
 ; 1    2    3
 ; 4    5    6
+;
+; SkinType: "A0", "A3" or "Special" (e.g. Saki wedding, Lin bikini)
 ; ...
-SimulacraId1 := 4
-IsSimulacra1A3 := True
-IsSimulacra1SpecialSkin := False
-SimulacraId2 := 1
-IsSimulacra2A3 := False
-IsSimulacra2SpecialSkin := True
+Simulacra1 := 4
+Simulacra1SkinType := "A3"
+Simulacra2 := 1
+Simulacra2SkinType := "Special"
 
-;;;; Others
+;;;; Other QoL hotkeys
+; - F8: Open Relic Set2 and scroll to right
+; - Ctrl+F8: Open Relic Set3 and scroll to right
 ; - F12: Click on team flag to show team HP
 ; - Ctrl+F12: Quick exit instance
 
-;;;;;; DO NOT MODIFY ANYTHING BELOW EXCEPT FOR "F3::" AND "F4::"
+
+;;;;;; DO NOT MODIFY ANYTHING BELOW
 ;;;;;; COORDINATES ARE BASED ON 16:9 RESOLUTION (e.g. 3840x2160)
 
 ; General
@@ -67,6 +66,8 @@ XPctExitInstanceBtn := 538/3840
 YPctExitInstanceBtn := 128/2160
 XPctTeamFlag := 3792/3840
 YPctTeamFlag := 632/2160
+XPctResultScreenCenter := 1920/3840
+YPctResultScreenCenter := 1266/2160
 
 ; Weapon
 XPctWeaponSet := 336/3840
@@ -145,7 +146,7 @@ MoveMouseToXPctYPct(XPct, YPct) {
 ClickOnXPctYPct(XPct, YPct) {
 	MoveMouseToXPctYPct(XPct, YPct)
 	MouseClick, Left
-	Sleep 672
+	Sleep 652
 }
 
 ClickOnXPctYPctQuick(XPct, YPct) {
@@ -421,7 +422,7 @@ PressEsc() {
 	Sleep 512
 }
 
-ClickAltTeamFlag() {
+AltClickTeamFlag() {
 	global XPctTeamFlag
 	global YPctTeamFlag
 	Send {Alt Down}
@@ -431,7 +432,17 @@ ClickAltTeamFlag() {
 	Send {Alt Up}
 }
 
-ClickAltExitInstanceBtnAndOk() {
+AltClickResultScreenCenter() {
+	global XPctResultScreenCenter
+	global YPctResultScreenCenter
+	Send {Alt Down}
+	Sleep 102
+	ClickOnXPctYPctVeryQuick(XPctResultScreenCenter, YPctResultScreenCenter)
+	ClickOnXPctYPctQuick(XPctResultScreenCenter, YPctResultScreenCenter)
+	Send {Alt Up}
+}
+
+AltClickExitInstanceBtnAndOk() {
 	global XPctExitInstanceBtn
 	global YPctExitInstanceBtn
 	Send {Alt Down}
@@ -519,42 +530,42 @@ ClickSimulacraSpecialSkin() {
 	ClickOnXPctYPct(XPctSimulacraSpecialSkin, YPctSimulacraSpecialSkin)
 }
 
-SwapToMatriceIds1() {
-	EquipMatriceIds1(True)
+SwapToMatrices1() {
+	EquipMatrices1(True)
 }
 
-SwapToMatriceIds2() {
-	EquipMatriceIds2(True)
+SwapToMatrices2() {
+	EquipMatrices2(True)
 }
 
-EquipMatriceIds1(Swap=False) {
-	global MatriceIds1
+EquipMatrices1(Swap=False) {
+	global Matrices1
 	ClickMatriceIcon()
 	ClickLargeViewMatriceTL()
 	Sleep 212
-	ClickSelectMatriceAndAffixAndOk(MatriceIds1[1], Swap)
+	ClickSelectMatriceAndAffixAndOk(Matrices1[1], Swap)
 	ClickSmallViewMatriceTR()
-	ClickSelectMatriceAndAffixAndOk(MatriceIds1[2], Swap)
+	ClickSelectMatriceAndAffixAndOk(Matrices1[2], Swap)
 	ClickSmallViewMatriceBL()
-	ClickSelectMatriceAndAffixAndOk(MatriceIds1[3], Swap)
+	ClickSelectMatriceAndAffixAndOk(Matrices1[3], Swap)
 	ClickSmallViewMatriceBR()
-	ClickSelectMatriceAndAffixAndOk(MatriceIds1[4], Swap)
+	ClickSelectMatriceAndAffixAndOk(Matrices1[4], Swap)
 	ClickBackBtn()
 	ClickBackBtn()
 }
 
-EquipMatriceIds2(Swap=False) {
-	global MatriceIds2
+EquipMatrices2(Swap=False) {
+	global Matrices2
 	ClickMatriceIcon()
 	ClickLargeViewMatriceTL()
 	Sleep 212
-	ClickSelectMatriceAndAffixAndOk(MatriceIds2[1], Swap)
+	ClickSelectMatriceAndAffixAndOk(Matrices2[1], Swap)
 	ClickSmallViewMatriceTR()
-	ClickSelectMatriceAndAffixAndOk(MatriceIds2[2], Swap)
+	ClickSelectMatriceAndAffixAndOk(Matrices2[2], Swap)
 	ClickSmallViewMatriceBL()
-	ClickSelectMatriceAndAffixAndOk(MatriceIds2[3], Swap)
+	ClickSelectMatriceAndAffixAndOk(Matrices2[3], Swap)
 	ClickSmallViewMatriceBR()
-	ClickSelectMatriceAndAffixAndOk(MatriceIds2[4], Swap)
+	ClickSelectMatriceAndAffixAndOk(Matrices2[4], Swap)
 	ClickBackBtn()
 	ClickBackBtn()
 }
@@ -575,17 +586,16 @@ EquipRecommendedMatrix1(Swap=False) {
 
 ; Hotkeys
 
-; F3 and F4: Build your own combo to swap weap/matrice/equip
-; Function names are pretty self-explanary
 ; "Equip-" functions affix matrices without clicking on Ok button
 ; "SwapTo-" functions affix matrices and click on Ok button
+
 F3::
 OpenWeaponMenuQuick()
 ClickWeaponSet1()
 ClickWeapon3()
-SwapToMatriceIds1()
+SwapToMatrices1()
 ClickWeapon1()
-EquipMatriceIds2()
+EquipMatrices2()
 OpenEquipMenu()
 ClickEquipSet1()
 ClickBackBtn()
@@ -597,28 +607,29 @@ ClickWeaponSet2()
 ClickWeapon3()
 SwapToRecommendedMatrix1()
 ClickWeapon2()
-EquipMatriceIds1()
+EquipMatrices1()
 OpenEquipMenu()
 ClickEquipSet2()
 ClickBackBtn()
 return
 
+
 F5::
-SwapToMatriceIds1()
+SwapToMatrices1()
 return
 
 ^F5::
 VK19 & F5::
-EquipMatriceIds1()
+EquipMatrices1()
 return
 
 F6::
-SwapToMatriceIds2()
+SwapToMatrices2()
 return
 
 ^F6::
 VK19 & F6::
-EquipMatriceIds2()
+EquipMatrices2()
 return
 
 F7::
@@ -637,11 +648,11 @@ return
 F9::
 OpenWeaponMenuQuick()
 ClickSimulacra()
-ClickSelectSimulacra(SimulacraId1)
-If ( IsSimulacra1SpecialSkin ) {
+ClickSelectSimulacra(Simulacra1)
+If ( Simulacra1SkinType = "Special" ) {
 	ClickSimulacraSpecialSkin()
 }
-Else If ( IsSimulacra1A3 ) {
+Else If ( Simulacra1SkinType = "A3" ) {
 	ClickSimulacraA3Skin()
 }
 ClickSimulacraBtn()
@@ -651,11 +662,11 @@ return
 F10::
 OpenWeaponMenuQuick()
 ClickSimulacra()
-ClickSelectSimulacra(SimulacraId2)
-If ( IsSimulacra2SpecialSkin ) {
+ClickSelectSimulacra(Simulacra2)
+If ( Simulacra2SkinType = "Special" ) {
 	ClickSimulacraSpecialSkin()
 }
-Else If ( IsSimulacra2A3 ) {
+Else If ( Simulacra2SkinType = "A3" ) {
 	ClickSimulacraA3Skin()
 }
 ClickSimulacraBtn()
@@ -663,38 +674,19 @@ ClickBackBtn()
 return
 
 F12::
-ClickAltTeamFlag()
+AltClickTeamFlag()
 return
 
 ^F12::
 VK19 & F12::
-ClickAltExitInstanceBtnAndOk()
+AltClickExitInstanceBtnAndOk()
+return
+
+Pause::
+AltClickResultScreenCenter()
 return
 
 Esc::
 PressEsc()
 Reload
 return
-
-;;;;; DEPRECATED
-;
-; AltStatus := False
-; MButton::
-; If AltStatus
-; 	Send {LALT down}
-; Else
-; 	Send {LALT up}
-; AltStatus := !AltStatus
-; return
-;
-; F5::
-; SwapToWeaponSet1()
-; return
-;
-; F6::
-; SwapToWeaponSet2()
-; return
-;
-; F7::
-; SwapToWeaponSet3()
-; return
