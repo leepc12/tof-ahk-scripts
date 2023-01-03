@@ -1,4 +1,4 @@
-; Weapon/Matrice Swapper v4.1
+; Weapon/Matrice Swapper v4.2
 ; Written by Py-ra (Server: Nightfall, Crew: Evil)
 ; Discord: PYRA#4480
 ;
@@ -54,6 +54,7 @@ Simulacra2SkinType := "Special"
 ; - Ctrl+F8: Open Relic Set3 and scroll to right
 ; - F12: Click on team flag to show team HP
 ; - Ctrl+F12: Quick exit instance
+; - Pause: Click on the center of the battle result screen
 
 
 ;;;;;; DO NOT MODIFY ANYTHING BELOW
@@ -66,8 +67,10 @@ XPctExitInstanceBtn := 538/3840
 YPctExitInstanceBtn := 128/2160
 XPctTeamFlag := 3792/3840
 YPctTeamFlag := 632/2160
-XPctResultScreenCenter := 1920/3840
-YPctResultScreenCenter := 1266/2160
+; XPctResultScreenCenter := 1920/3840
+; YPctResultScreenCenter := 1266/2160
+XPctResultScreenCenter := 3240/3840
+YPctResultScreenCenter := 1571/2160
 
 ; Weapon
 XPctWeaponSet := 336/3840
