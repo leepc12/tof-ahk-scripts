@@ -1,4 +1,4 @@
-; Weapon/Matrice Swapper v4.2
+; Weapon/Matrice Swapper v4.5
 ; Written by Py-ra (Server: Nightfall, Crew: Evil)
 ; Discord: PYRA#4480
 ;
@@ -21,44 +21,56 @@ SetWorkingDir, %A_ScriptDir%
 ; - F6: Swap to Matrices2 for a selected weapon
 ; - Ctrl+F5: Equip Matrices1 for a selected weapon
 ; - Ctrl+F6: Equip Matrices2 for a selected weapon
-; - F7: Equip (or swap to) Recommended Matrix Set 1
+; - F7: Equip  Recommended Matrix Set 1
+;
+; "Swap-to" action does "Equip" and then click on "Ok" confirm button
 ;
 ; Matrices1 and Matrices2 are 1-based indices of matrice
 ; location on the game UI
 ; 1    2    3
 ; 4    5    6
 ; ...
-Matrices1 := [3,1,2,1] ; Edit this array for F5
+Matrices1 := [1,2,1,3] ; Edit this array for F5
 Matrices2 := [4,3,3,2] ; Edit this array for F6
+Matrices3 := [3,1,2,1] ; Edit this array for F7
+
+; For later use (or for combo F3, F4 only)
+; Currently no hotkey defined for Matrices3
+
+;;;; Simulacra Trait
+; - Ctrl+F3: Use trait of SimulacraTrait1
+; - Ctrl+F4: Use trait of SimulacraTrait2
+;
+; SimulacraTrait1 and SimulacraTrait2 are 1-based indices of Simulacra
+; location on the game UI. Script will scroll down if index > 6
+; 1    2    3
+; 4    5    6
+; 7    8    9 (script will scroll down)
+SimulacraTrait1 := 6 ; Edit this for Ctrl+F3
+SimulacraTrait2 := 8 ; Edit this for Ctrl+F4
 
 ;;;; Simulacra skin
 ; - F9: Change to Simulacra1's skin
 ; - F10: Change to Simulacra2's skin
 ;
-; You can also use either key to remove curent Simulacra skin
-;
-; Simulacra1 and Simulacra2 are 1-based indices of Simulacra
-; location on the game UI.
-; 1    2    3
-; 4    5    6
-;
 ; SkinType: "A0", "A3" or "Special" (e.g. Saki wedding, Lin bikini)
 ; ...
-Simulacra1 := 4
-Simulacra1SkinType := "A3"
-Simulacra2 := 1
-Simulacra2SkinType := "Special"
+SimulacraSkin1 := 4				; Edit this for F9
+SimulacraSkinType1 := "A3" 		; Edit this for F9
+SimulacraSkin2 := 1 			; Edit this for F10
+SimulacraSkinType2 := "Special" ; Edit this for F10
 
 ;;;; Other QoL hotkeys
 ; - F8: Open Relic Set2 and scroll to right
 ; - Ctrl+F8: Open Relic Set3 and scroll to right
 ; - F12: Click on team flag to show team HP
 ; - Ctrl+F12: Quick exit instance
-; - Pause: Click on the center of the battle result screen
+; - Pause: Click on the center of battle result screen
+; - Mouse Mid-Click: Toggle hold-Alt
 
 
-;;;;;; DO NOT MODIFY ANYTHING BELOW
-;;;;;; COORDINATES ARE BASED ON 16:9 RESOLUTION (e.g. 3840x2160)
+;;;;;;;;;;;;;;;;;;; DO NOT MODIFY ANYTHING BELOW ;;;;;;;;;;;;;;;;;;;;
+AltStatus := False
 
 ; General
 XPctBackBtn := 100/3840
@@ -70,7 +82,7 @@ YPctTeamFlag := 632/2160
 ; XPctResultScreenCenter := 1920/3840
 ; YPctResultScreenCenter := 1266/2160
 XPctResultScreenCenter := 3240/3840
-YPctResultScreenCenter := 1571/2160
+YPctResultScreenCenter := 1591/2160
 
 ; Weapon
 XPctWeaponSet := 336/3840
@@ -99,8 +111,8 @@ XPctLargeViewMatriceTL := 831/3840
 YPctLargeViewMatriceTL := 476/2160
 XPctAffixBtn := 2916/3840
 YPctAffixBtn := 1911/2160
-XPctConfirmBtn := 2517/3840
-YPctConfirmBtn := 1168/2160
+XPctConfirmBtn := 2396/3840
+YPctConfirmBtn := 1111/2160
 XPctSmallViewMatriceLeft := 1500/3840
 XPctSmallViewMatriceRight := 2510/3840
 YPctSmallViewMatriceTop := 650/2160
@@ -131,12 +143,28 @@ YPctSelectSimulacraRow1 := 484/2160
 YPctSelectSimulacraRow2 := 1166/2160
 XPctSimulacra := 2155/3840
 YPctSimulacra := 2050/2160
+XPctSimulacraTraitToggle := 3300/3840
+YPctSimulacraTraitToggle := 1694/2160
 XPctSimulacraBtn := 3043/3840
 YPctSimulacraBtn := 1930/2160
 XPctSimulacraA3Skin := 1088/3840
 YPctSimulacraA3Skin := 1180/2160
 XPctSimulacraSpecialSkin := 605/3840
 YPctSimulacraSpecialSkin := 1622/2160
+
+; Scrolling (Relic, Simulacra)
+NumScrollDn4NextSimulacraPage := 14
+NumScrollRelic := 55
+
+; Delay
+DelayClick := 632
+DelayClickQuick := 462
+DelayClickVeryQuick := 172
+DelayRelicSet := 300
+DelayEquipMatrice := 212
+DelayGeneralVeryLong := 990
+DelayGeneralLong := 502
+DelayGeneralShort := 102
 
 ; Functions
 MoveMouseToXPctYPct(XPct, YPct) {
@@ -147,78 +175,102 @@ MoveMouseToXPctYPct(XPct, YPct) {
 }
 
 ClickOnXPctYPct(XPct, YPct) {
+	global DelayClick
 	MoveMouseToXPctYPct(XPct, YPct)
 	MouseClick, Left
-	Sleep 652
+	Sleep DelayClick
 }
 
 ClickOnXPctYPctQuick(XPct, YPct) {
+	global DelayClickQuick
 	MoveMouseToXPctYPct(XPct, YPct)
 	MouseClick, Left
-	Sleep 512
+	Sleep DelayClickQuick
 }
 
 ClickOnXPctYPctVeryQuick(XPct, YPct) {
+	global DelayClickVeryQuick
 	MoveMouseToXPctYPct(XPct, YPct)
 	MouseClick, Left
-	Sleep 192
+	Sleep DelayClickVeryQuick
 }
+DelayOpenWeaponMenu := 892
+DelayOpenWeaponMenuQuick := 492
+DelayOpenEquipMenu := 892
+DelayClickWeaponSet := 512
+DelayScroll := 35
+
+NumClickSwapToWeaponSet := 5
+DelayClickSwapToWeaponSet := 328
 
 OpenWeaponMenu() {
+	global DelayOpenWeaponMenu
 	Send, {n}
-	Sleep 892
+	Sleep DelayOpenWeaponMenu
 }
 
 OpenEquipMenu() {
+	global DelayOpenEquipMenu
 	Send, {b}
-	Sleep 892
+	Sleep DelayOpenEquipMenu
 }
 
 OpenWeaponMenuQuick() {
+	global DelayOpenWeaponMenuQuick
 	Send, {n}
-	Sleep 492
+	Sleep DelayOpenWeaponMenuQuick
 }
 
 SwapToWeaponSet(XPct, YPct) {
+	global NumClickSwapToWeaponSet
+	global DelayClickSwapToWeaponSet
 	OpenWeaponMenuQuick()
 
 	MoveMouseToXPctYPct(XPct, YPct)
-	Loop 6 {
+	Loop %NumClickSwapToWeaponSet% {
 		MouseClick, Left
-		Sleep 428
+		Sleep DelayClickSwapToWeaponSet
 	}
-	Sleep 212
-	Send, {esc}
 }
 
 ClickWeaponSet1() {
 	global XPctWeaponSet
 	global YPctWeaponSet1
+	global DelayClickWeaponSet
 	ClickOnXPctYPct(XPctWeaponSet, YPctWeaponSet1)
+	Sleep DelayClickWeaponSet
 }
 
 ClickWeaponSet2() {
 	global XPctWeaponSet
 	global YPctWeaponSet2
+	global DelayClickWeaponSet
 	ClickOnXPctYPct(XPctWeaponSet, YPctWeaponSet2)
+	Sleep DelayClickWeaponSet
 }
 
 ClickWeaponSet3() {
 	global XPctWeaponSet
 	global YPctWeaponSet3
+	global DelayClickWeaponSet
 	ClickOnXPctYPct(XPctWeaponSet, YPctWeaponSet3)
+	Sleep DelayClickWeaponSet
 }
 
 ClickWeaponSet4() {
 	global XPctWeaponSet
 	global YPctWeaponSet4
+	global DelayClickWeaponSet
 	ClickOnXPctYPct(XPctWeaponSet, YPctWeaponSet4)
+	Sleep DelayClickWeaponSet
 }
 
 ClickWeaponSet5() {
 	global XPctWeaponSet
 	global YPctWeaponSet5
+	global DelayClickWeaponSet
 	ClickOnXPctYPct(XPctWeaponSet, YPctWeaponSet5)
+	Sleep DelayClickWeaponSet
 }
 
 ClickEquipSet1() {
@@ -387,6 +439,25 @@ GetSelectSimulacraYPct(Id) {
 	return Floor((Id-1)/3) * (YPctSelectSimulacraRow2-YPctSelectSimulacraRow1) + YPctSelectSimulacraRow1
 }
 
+ScrollDownBeforeSelectSimulacra(Id) {
+	global NumScrollDn4NextSimulacraPage
+	global XPctSelectSimulacraCol1
+	global YPctSelectSimulacraRow1
+	global DelayScroll
+	global DelayGeneralVeryLong
+
+	NumScroll := Floor((Id-1)/6)*NumScrollDn4NextSimulacraPage
+
+	If (NumScroll > 0) {
+		MoveMouseToXPctYPct(XPctSelectSimulacraCol1, YPctSelectSimulacraRow1)
+		Sleep DelayGeneralVeryLong
+		Loop %NumScroll% {
+			Send, {WheelDown}
+			Sleep DelayScroll
+		}
+	}
+}
+
 ClickSelectMatrice(Id) {
 	XPct := GetSelectMatriceXPct(Id)
 	YPct := GetSelectMatriceYPct(Id)
@@ -394,8 +465,10 @@ ClickSelectMatrice(Id) {
 }
 
 ClickSelectSimulacra(Id) {
-	XPct := GetSelectSimulacraXPct(Id)
-	YPct := GetSelectSimulacraYPct(Id)
+	ScrollDownBeforeSelectSimulacra(Id)
+	IdAfterScroll := Mod(Id-1, 6) + 1
+	XPct := GetSelectSimulacraXPct(IdAfterScroll)
+	YPct := GetSelectSimulacraYPct(IdAfterScroll)
 	ClickOnXPctYPctQuick(XPct, YPct)
 }
 
@@ -412,8 +485,9 @@ ClickOk() {
 }
 
 ClickSelectMatriceAndAffixAndOk(Id, Swap) {
+	global DelayGeneralShort
 	ClickSelectMatrice(Id)
-	Sleep 100
+	Sleep DelayGeneralShort
 	ClickAffix()
 	If (Swap) {
 		ClickOk()
@@ -421,15 +495,17 @@ ClickSelectMatriceAndAffixAndOk(Id, Swap) {
 }
 
 PressEsc() {
+	global DelayGeneralLong
 	Send, {Esc}
-	Sleep 512
+	Sleep DelayGeneralLong
 }
 
 AltClickTeamFlag() {
 	global XPctTeamFlag
 	global YPctTeamFlag
+	global DelayGeneralShort
 	Send {Alt Down}
-	Sleep 102
+	Sleep DelayGeneralShort
 	ClickOnXPctYPctVeryQuick(XPctTeamFlag, YPctTeamFlag)
 	ClickOnXPctYPctQuick(XPctTeamFlag, YPctTeamFlag)
 	Send {Alt Up}
@@ -438,22 +514,25 @@ AltClickTeamFlag() {
 AltClickResultScreenCenter() {
 	global XPctResultScreenCenter
 	global YPctResultScreenCenter
+	global DelayGeneralShort
 	Send {Alt Down}
-	Sleep 102
+	Sleep DelayGeneralShort
+	; ClickOk()
 	ClickOnXPctYPctVeryQuick(XPctResultScreenCenter, YPctResultScreenCenter)
-	ClickOnXPctYPctQuick(XPctResultScreenCenter, YPctResultScreenCenter)
 	Send {Alt Up}
 }
 
 AltClickExitInstanceBtnAndOk() {
 	global XPctExitInstanceBtn
 	global YPctExitInstanceBtn
+	global DelayGeneralShort
+	global DelayGeneralLong
 	Send {Alt Down}
-	Sleep 102
+	Sleep DelayGeneralShort
 	ClickOnXPctYPctVeryQuick(XPctExitInstanceBtn, YPctExitInstanceBtn)
 	ClickOnXPctYPctQuick(XPctExitInstanceBtn, YPctExitInstanceBtn)
 	Send {Alt Up}
-	Sleep 402
+	Sleep DelayGeneralLong
 	ClickOk()
 }
 
@@ -481,32 +560,37 @@ ClickRelicSet3() {
 	ClickOnXPctYPct(XPctRelicSet3, YPctRelicSet)
 }
 
-ClickRelicSelectRowAndLeftSwipe() {
-	global YPctRelicSelectRow	
+ClickRelicSelectRowAndScrollRight() {
+	global YPctRelicSelectRow
+	global DelayScroll
+	global NumScrollRelic
+	global DelayGeneralLong
 	MoveMouseToXPctYPct(0.8, YPctRelicSelectRow)
-	Sleep 150
-	Loop 65 {
+	Sleep DelayGeneralLong
+	Loop %NumScrollRelic% {
 		Send, {WheelDown}
-		Sleep 35
+		Sleep DelayScroll
 	}
 }
 
 RelicSet2() {
+	global DelayRelicSet
 	PressEsc()
-	Sleep 300
+	Sleep DelayRelicSet
 	ClickRelic()
 	ClickRelicDeploy()
 	ClickRelicSet2()
-	ClickRelicSelectRowAndLeftSwipe()
+	ClickRelicSelectRowAndScrollRight()
 }
 
 RelicSet3() {
+	global DelayRelicSet
 	PressEsc()
-	Sleep 300
+	Sleep DelayRelicSet
 	ClickRelic()
 	ClickRelicDeploy()
 	ClickRelicSet3()
-	ClickRelicSelectRowAndLeftSwipe()
+	ClickRelicSelectRowAndScrollRight()
 }
 
 ClickSimulacra() {
@@ -519,6 +603,12 @@ ClickSimulacraBtn() {
 	global XPctSimulacraBtn
 	global YPctSimulacraBtn
 	ClickOnXPctYPct(XPctSimulacraBtn, YPctSimulacraBtn)
+}
+
+ClickSimulacraTraitToggle() {
+	global XPctSimulacraTraitToggle
+	global YPctSimulacraTraitToggle
+	ClickOnXPctYPct(XPctSimulacraTraitToggle, YPctSimulacraTraitToggle)
 }
 
 ClickSimulacraA3Skin() {
@@ -541,11 +631,16 @@ SwapToMatrices2() {
 	EquipMatrices2(True)
 }
 
+SwapToMatrices3() {
+	EquipMatrices3(True)
+}
+
 EquipMatrices1(Swap=False) {
+	global DelayEquipMatrice
 	global Matrices1
 	ClickMatriceIcon()
 	ClickLargeViewMatriceTL()
-	Sleep 212
+	Sleep DelayEquipMatrice
 	ClickSelectMatriceAndAffixAndOk(Matrices1[1], Swap)
 	ClickSmallViewMatriceTR()
 	ClickSelectMatriceAndAffixAndOk(Matrices1[2], Swap)
@@ -558,10 +653,11 @@ EquipMatrices1(Swap=False) {
 }
 
 EquipMatrices2(Swap=False) {
+	global DelayEquipMatrice
 	global Matrices2
 	ClickMatriceIcon()
 	ClickLargeViewMatriceTL()
-	Sleep 212
+	Sleep DelayEquipMatrice
 	ClickSelectMatriceAndAffixAndOk(Matrices2[1], Swap)
 	ClickSmallViewMatriceTR()
 	ClickSelectMatriceAndAffixAndOk(Matrices2[2], Swap)
@@ -569,6 +665,23 @@ EquipMatrices2(Swap=False) {
 	ClickSelectMatriceAndAffixAndOk(Matrices2[3], Swap)
 	ClickSmallViewMatriceBR()
 	ClickSelectMatriceAndAffixAndOk(Matrices2[4], Swap)
+	ClickBackBtn()
+	ClickBackBtn()
+}
+
+EquipMatrices3(Swap=False) {
+	global DelayEquipMatrice
+	global Matrices3
+	ClickMatriceIcon()
+	ClickLargeViewMatriceTL()
+	Sleep DelayEquipMatrice
+	ClickSelectMatriceAndAffixAndOk(Matrices3[1], Swap)
+	ClickSmallViewMatriceTR()
+	ClickSelectMatriceAndAffixAndOk(Matrices3[2], Swap)
+	ClickSmallViewMatriceBL()
+	ClickSelectMatriceAndAffixAndOk(Matrices3[3], Swap)
+	ClickSmallViewMatriceBR()
+	ClickSelectMatriceAndAffixAndOk(Matrices3[4], Swap)
 	ClickBackBtn()
 	ClickBackBtn()
 }
@@ -587,18 +700,23 @@ EquipRecommendedMatrix1(Swap=False) {
 	ClickBackBtn()
 }
 
-; Hotkeys
 
+
+; Weapon/Equip/Matrice swap combo
+;
 ; "Equip-" functions affix matrices without clicking on Ok button
 ; "SwapTo-" functions affix matrices and click on Ok button
+; You can also use EquipRecommendedMatrix1() here
 
 F3::
 OpenWeaponMenuQuick()
 ClickWeaponSet1()
-ClickWeapon3()
+
+ClickWeapon2()
 SwapToMatrices1()
 ClickWeapon1()
-EquipMatrices2()
+SwapToMatrices2()
+
 OpenEquipMenu()
 ClickEquipSet1()
 ClickBackBtn()
@@ -607,20 +725,40 @@ return
 F4::
 OpenWeaponMenuQuick()
 ClickWeaponSet2()
-ClickWeapon3()
-SwapToRecommendedMatrix1()
+
 ClickWeapon2()
-EquipMatrices1()
+SwapToMatrices1()
+ClickWeapon1()
+SwapToMatrices2()
+
 OpenEquipMenu()
 ClickEquipSet2()
 ClickBackBtn()
 return
 
+; Simulacra Trait
+^F3::
+VK19 & F3::
+OpenWeaponMenuQuick()
+ClickSimulacra()
+ClickSelectSimulacra(SimulacraTrait1)
+ClickSimulacraTraitToggle()
+ClickBackBtn()
+return
 
+^F4::
+VK19 & F4::
+OpenWeaponMenuQuick()
+ClickSimulacra()
+ClickSelectSimulacra(SimulacraTrait2)
+ClickSimulacraTraitToggle()
+ClickBackBtn()
+return
+
+; Swap Matrices
 F5::
 SwapToMatrices1()
 return
-
 ^F5::
 VK19 & F5::
 EquipMatrices1()
@@ -629,16 +767,21 @@ return
 F6::
 SwapToMatrices2()
 return
-
 ^F6::
 VK19 & F6::
 EquipMatrices2()
 return
 
 F7::
-SwapToRecommendedMatrix1()
+SwapToMatrices3()
+return
+^F7::
+VK19 & F7::
+EquipMatrices3()
+; SwapToRecommendedMatrix1()
 return
 
+; Relic
 F8::
 RelicSet2()
 return
@@ -648,14 +791,15 @@ VK19 & F8::
 RelicSet3()
 return
 
+; Simulacra skin
 F9::
 OpenWeaponMenuQuick()
 ClickSimulacra()
-ClickSelectSimulacra(Simulacra1)
-If ( Simulacra1SkinType = "Special" ) {
+ClickSelectSimulacra(SimulacraSkin1)
+If ( SimulacraSkinType1 = "Special" ) {
 	ClickSimulacraSpecialSkin()
 }
-Else If ( Simulacra1SkinType = "A3" ) {
+Else If ( SimulacraSkinType1 = "A3" ) {
 	ClickSimulacraA3Skin()
 }
 ClickSimulacraBtn()
@@ -665,31 +809,58 @@ return
 F10::
 OpenWeaponMenuQuick()
 ClickSimulacra()
-ClickSelectSimulacra(Simulacra2)
-If ( Simulacra2SkinType = "Special" ) {
+ClickSelectSimulacra(SimulacraSkin2)
+If ( SimulacraSkinType2 = "Special" ) {
 	ClickSimulacraSpecialSkin()
 }
-Else If ( Simulacra2SkinType = "A3" ) {
+Else If ( SimulacraSkinType2 = "A3" ) {
 	ClickSimulacraA3Skin()
 }
 ClickSimulacraBtn()
 ClickBackBtn()
 return
 
+; Team flag
 F12::
 AltClickTeamFlag()
 return
 
+; Exit instance
 ^F12::
 VK19 & F12::
 AltClickExitInstanceBtnAndOk()
 return
 
+; Click center of result screen
 Pause::
 AltClickResultScreenCenter()
 return
 
+; Esc (this will stop any hotkey by reloading script)
 Esc::
 PressEsc()
 Reload
+return
+
+; Quick weapon swap combo (for my reWASD)
+^F9::
+VK19 & F9::
+SwapToWeaponSet1()
+return
+^F10::
+VK19 & F10::
+SwapToWeaponSet2()
+return
+^F11::
+VK19 & F11::
+SwapToWeaponSet3()
+return
+
+; Mouse middle click to hold Alt
+MButton::
+If AltStatus
+	Send {LALT down}
+Else
+	Send {LALT up}
+AltStatus := !AltStatus
 return
