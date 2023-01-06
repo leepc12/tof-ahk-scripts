@@ -1,6 +1,6 @@
-; Weapon/Matrice Swapper v4.5
+; Weapon/Matrice Swapper v4.6
 ; Written by Py-ra (Server: Nightfall, Crew: Evil)
-; Discord: PYRA#4480
+; Discord: Py-raA#4480
 ;
 ; This script works with 16:9 resolution only
 ; Press ESC if you want to stop a running hotkey
@@ -152,6 +152,9 @@ YPctSimulacraA3Skin := 1180/2160
 XPctSimulacraSpecialSkin := 605/3840
 YPctSimulacraSpecialSkin := 1622/2160
 
+; Quick Swap Weapon
+NumClickSwapToWeaponSet := 5
+
 ; Scrolling (Relic, Simulacra)
 NumScrollDn4NextSimulacraPage := 14
 NumScrollRelic := 55
@@ -165,6 +168,13 @@ DelayEquipMatrice := 212
 DelayGeneralVeryLong := 990
 DelayGeneralLong := 502
 DelayGeneralShort := 102
+DelayClickSwapToWeaponSet := 328
+DelayOpenWeaponMenu := 892
+DelayOpenWeaponMenuQuick := 492
+DelayOpenEquipMenu := 892
+DelayClickWeaponSet := 512
+DelayScroll := 35
+
 
 ; Functions
 MoveMouseToXPctYPct(XPct, YPct) {
@@ -194,14 +204,6 @@ ClickOnXPctYPctVeryQuick(XPct, YPct) {
 	MouseClick, Left
 	Sleep DelayClickVeryQuick
 }
-DelayOpenWeaponMenu := 892
-DelayOpenWeaponMenuQuick := 492
-DelayOpenEquipMenu := 892
-DelayClickWeaponSet := 512
-DelayScroll := 35
-
-NumClickSwapToWeaponSet := 5
-DelayClickSwapToWeaponSet := 328
 
 OpenWeaponMenu() {
 	global DelayOpenWeaponMenu
