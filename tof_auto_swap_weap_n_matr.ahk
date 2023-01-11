@@ -1,9 +1,11 @@
-; Weapon/Matrice Swapper v4.6
+; Weapon/Matrice Swapper v4.8
 ; Written by Py-ra (Server: Nightfall, Crew: Evil)
-; Discord: Py-raA#4480
+; Discord: Py-ra#4480
 ;
-; This script works with 16:9 resolution only
-; Press ESC if you want to stop a running hotkey
+; This script works only with FHD, QHD and 4k resolution
+;
+; Press ESC if you want to stop any running hotkey
+;
 
 #IfWinActive, ahk_exe QRSL.exe
 SendMode, Input
@@ -19,50 +21,52 @@ SetWorkingDir, %A_ScriptDir%
 ;;;; Swap-to/Equip matrices
 ; - F5: Swap to Matrices1 for a selected weapon
 ; - F6: Swap to Matrices2 for a selected weapon
+; - F7: Swap to Matrices2 for a selected weapon
 ; - Ctrl+F5: Equip Matrices1 for a selected weapon
 ; - Ctrl+F6: Equip Matrices2 for a selected weapon
-; - F7: Equip  Recommended Matrix Set 1
+; - Ctrl+F7: Equip Matrices3 for a selected weapon
 ;
-; "Swap-to" action does "Equip" and then click on "Ok" confirm button
+; "Swap-to" action does "Equip" and then click on "Ok" button
 ;
-; Matrices1 and Matrices2 are 1-based indices of matrice
-; location on the game UI
+; Matrices1 and Matrices2 are 1-based indices of matrices
 ; 1    2    3
 ; 4    5    6
+; 7    8    9
 ; ...
-Matrices1 := [1,2,1,3] ; Edit this array for F5
-Matrices2 := [4,3,3,2] ; Edit this array for F6
+Matrices1 := [1,3,1,3] ; Edit this array for F5
+Matrices2 := [4,4,3,2] ; Edit this array for F6
 Matrices3 := [3,1,2,1] ; Edit this array for F7
-
-; For later use (or for combo F3, F4 only)
-; Currently no hotkey defined for Matrices3
 
 ;;;; Simulacra Trait
 ; - Ctrl+F3: Use trait of SimulacraTrait1
 ; - Ctrl+F4: Use trait of SimulacraTrait2
+; - Ctrl+Alt+F3: Use trait of SimulacraTrait3
+; - Ctrl+Alt+F4: Use trait of SimulacraTrait4
 ;
-; SimulacraTrait1 and SimulacraTrait2 are 1-based indices of Simulacra
-; location on the game UI. Script will scroll down if index > 6
+; SimulacraTrait1 and SimulacraTrait2 are 1-based indices of
+;
+; Simulacra on the game UI. Script will scroll down if index > 6
 ; 1    2    3
 ; 4    5    6
 ; 7    8    9 (script will scroll down)
+; ...
 SimulacraTrait1 := 6 ; Edit this for Ctrl+F3
 SimulacraTrait2 := 8 ; Edit this for Ctrl+F4
+SimulacraTrait3 := 4 ; Edit this for Ctrl+Alt+F3
+SimulacraTrait4 := 11 ; Edit this for Ctrl+Alt+F4
 
 ;;;; Simulacra skin
 ; - F9: Change to Simulacra1's skin
 ; - F10: Change to Simulacra2's skin
 ;
 ; SkinType: "A0", "A3" or "Special" (e.g. Saki wedding, Lin bikini)
-; ...
-SimulacraSkin1 := 4				; Edit this for F9
-SimulacraSkinType1 := "A3" 		; Edit this for F9
-SimulacraSkin2 := 1 			; Edit this for F10
+SimulacraSkin1 := 3	; Edit this for F9
+SimulacraSkinType1 := "Special" ; Edit this for F9
+SimulacraSkin2 := 1 ; Edit this for F10
 SimulacraSkinType2 := "Special" ; Edit this for F10
 
 ;;;; Other QoL hotkeys
 ; - F8: Open Relic Set2 and scroll to right
-; - Ctrl+F8: Open Relic Set3 and scroll to right
 ; - F12: Click on team flag to show team HP
 ; - Ctrl+F12: Quick exit instance
 ; - Pause: Click on the center of battle result screen
@@ -79,10 +83,10 @@ XPctExitInstanceBtn := 538/3840
 YPctExitInstanceBtn := 128/2160
 XPctTeamFlag := 3792/3840
 YPctTeamFlag := 632/2160
-; XPctResultScreenCenter := 1920/3840
-; YPctResultScreenCenter := 1266/2160
 XPctResultScreenCenter := 3240/3840
 YPctResultScreenCenter := 1591/2160
+XPctMapProgess := 3592/3840
+YPctMapProgess := 2048/2160
 
 ; Weapon
 XPctWeaponSet := 336/3840
@@ -111,8 +115,14 @@ XPctLargeViewMatriceTL := 831/3840
 YPctLargeViewMatriceTL := 476/2160
 XPctAffixBtn := 2916/3840
 YPctAffixBtn := 1911/2160
-XPctConfirmBtn := 2396/3840
-YPctConfirmBtn := 1111/2160
+XPctOkBtn := 2396/3840
+YPctOkBtn := 1111/2160
+XPctOkBtnAlone := 2270/3840
+YPctOkBtnAlone := 1136/2160
+
+XPctApproveBtn := 2200/3840
+YPctApproveBtn := 1544/2160
+
 XPctSmallViewMatriceLeft := 1500/3840
 XPctSmallViewMatriceRight := 2510/3840
 YPctSmallViewMatriceTop := 650/2160
@@ -125,6 +135,7 @@ XPctSelectMatriceCol1 := 217/3840
 XPctSelectMatriceCol2 := 637/3840
 YPctSelectMatriceRow1 := 561/2160
 YPctSelectMatriceRow2 := 958/2160
+
 
 ; Relic
 YPctRelicSelectRow := 1070/1440
@@ -153,15 +164,15 @@ XPctSimulacraSpecialSkin := 605/3840
 YPctSimulacraSpecialSkin := 1622/2160
 
 ; Quick Swap Weapon
-NumClickSwapToWeaponSet := 5
+NumClickSwapToWeaponSet := 3
 
 ; Scrolling (Relic, Simulacra)
 NumScrollDn4NextSimulacraPage := 14
 NumScrollRelic := 55
 
 ; Delay
-DelayClick := 632
-DelayClickQuick := 462
+DelayClick := 492
+DelayClickQuick := 352
 DelayClickVeryQuick := 172
 DelayRelicSet := 300
 DelayEquipMatrice := 212
@@ -169,10 +180,10 @@ DelayGeneralVeryLong := 990
 DelayGeneralLong := 502
 DelayGeneralShort := 102
 DelayClickSwapToWeaponSet := 328
-DelayOpenWeaponMenu := 892
+DelayOpenWeaponMenu := 592
 DelayOpenWeaponMenuQuick := 492
 DelayOpenEquipMenu := 892
-DelayClickWeaponSet := 512
+DelayClickWeaponSet := 812
 DelayScroll := 35
 
 
@@ -413,6 +424,12 @@ ClickSmallViewMatriceBR() {
 	ClickOnXPctYPctQuick(XPctSmallViewMatriceRight, YPctSmallViewMatriceBottom)
 }
 
+ClickMapProgress() {
+	global XPctMapProgess
+	global YPctMapProgess
+	ClickOnXPctYPctQuick(XPctMapProgess, YPctMapProgess)
+}
+
 GetSelectMatriceXPct(Id) {
 	global XPctSelectMatriceCol1
 	global XPctSelectMatriceCol2
@@ -481,9 +498,21 @@ ClickAffix() {
 }
 
 ClickOk() {
-	global XPctConfirmBtn
-	global YPctConfirmBtn
-	ClickOnXPctYPctQuick(XPctConfirmBtn, YPctConfirmBtn)
+	global XPctOkBtn
+	global YPctOkBtn
+	ClickOnXPctYPctQuick(XPctOkBtn, YPctOkBtn)
+}
+
+ClickOkAlone() {
+	global XPctOkBtnAlone
+	global YPctOkBtnAlone
+	ClickOnXPctYPctQuick(XPctOkBtnAlone, YPctOkBtnAlone)
+}
+
+ClickApprove() {
+	global XPctApproveBtn
+	global YPctApproveBtn
+	ClickOnXPctYPctQuick(XPctApproveBtn, YPctApproveBtn)
 }
 
 ClickSelectMatriceAndAffixAndOk(Id, Swap) {
@@ -519,7 +548,6 @@ AltClickResultScreenCenter() {
 	global DelayGeneralShort
 	Send {Alt Down}
 	Sleep DelayGeneralShort
-	; ClickOk()
 	ClickOnXPctYPctVeryQuick(XPctResultScreenCenter, YPctResultScreenCenter)
 	Send {Alt Up}
 }
@@ -708,10 +736,10 @@ EquipRecommendedMatrix1(Swap=False) {
 ;
 ; "Equip-" functions affix matrices without clicking on Ok button
 ; "SwapTo-" functions affix matrices and click on Ok button
-; You can also use EquipRecommendedMatrix1() here
+; You can also use EquipRecommendedMatrix1()
 
 F3::
-OpenWeaponMenuQuick()
+OpenWeaponMenu()
 ClickWeaponSet1()
 
 ClickWeapon2()
@@ -725,7 +753,7 @@ ClickBackBtn()
 return
 
 F4::
-OpenWeaponMenuQuick()
+OpenWeaponMenu()
 ClickWeaponSet2()
 
 ClickWeapon2()
@@ -753,6 +781,22 @@ VK19 & F4::
 OpenWeaponMenuQuick()
 ClickSimulacra()
 ClickSelectSimulacra(SimulacraTrait2)
+ClickSimulacraTraitToggle()
+ClickBackBtn()
+return
+
+^!F3::
+OpenWeaponMenuQuick()
+ClickSimulacra()
+ClickSelectSimulacra(SimulacraTrait3)
+ClickSimulacraTraitToggle()
+ClickBackBtn()
+return
+
+^!F4::
+OpenWeaponMenuQuick()
+ClickSimulacra()
+ClickSelectSimulacra(SimulacraTrait4)
 ClickSimulacraTraitToggle()
 ClickBackBtn()
 return
@@ -786,11 +830,6 @@ return
 ; Relic
 F8::
 RelicSet2()
-return
-
-^F8::
-VK19 & F8::
-RelicSet3()
 return
 
 ; Simulacra skin
@@ -844,7 +883,18 @@ PressEsc()
 Reload
 return
 
-; Quick weapon swap combo (for my reWASD)
+; Mouse middle click to hold Alt
+MButton::
+If AltStatus
+	Send {LALT down}
+Else
+	Send {LALT up}
+AltStatus := !AltStatus
+return
+
+;;;;;;;;;;; for my controller (reWASD) ;;;;;;;;;;;;;;;;
+
+; Quick weapon swap combo
 ^F9::
 VK19 & F9::
 SwapToWeaponSet1()
@@ -858,11 +908,34 @@ VK19 & F11::
 SwapToWeaponSet3()
 return
 
-; Mouse middle click to hold Alt
-MButton::
-If AltStatus
-	Send {LALT down}
-Else
-	Send {LALT up}
-AltStatus := !AltStatus
+; Click Approve or Ok
+^Backspace::
+VK19 & Backspace::
+ClickApprove()
+ClickOk()
+return
+
+; Open map and click progress to remove stupid blue ring
+^F8::
+VK19 & F8::
+Send, {m}
+Sleep DelayOpenWeaponMenu
+ClickMapProgress()
+PressEsc()
+PressEsc()
+return
+
+; AFK Skill Spammer, press ESC to stop it
+^!F12::
+While !AltStatus {
+	Sleep 1212
+	ControlSend,, {1},Tower of Fantasy
+	Sleep 28129
+	ControlSend,, {1},Tower of Fantasy
+	Sleep 29142
+	ControlSend,, {1},Tower of Fantasy
+	Sleep 33132
+	ControlSend,, {1},Tower of Fantasy
+	Sleep 30011
+}
 return
