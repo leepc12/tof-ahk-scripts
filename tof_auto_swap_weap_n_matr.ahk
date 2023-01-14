@@ -1,11 +1,8 @@
-; Weapon/Matrice Swapper v4.8
-; Written by Py-ra (Server: Nightfall, Crew: Evil)
+; ToF Weapon/Equipment/Matrice/Simulacra Swapper v4.8
 ; Discord: Py-ra#4480
 ;
 ; This script works only with FHD, QHD and 4k resolution
-;
-; Press ESC if you want to stop any running hotkey
-;
+; Press ESC to stop any running hotkey
 
 #IfWinActive, ahk_exe QRSL.exe
 SendMode, Input
@@ -28,7 +25,9 @@ SetWorkingDir, %A_ScriptDir%
 ;
 ; "Swap-to" action does "Equip" and then click on "Ok" button
 ;
-; Matrices1 and Matrices2 are 1-based indices of matrices
+; Matrices1 and Matrices2 are 1-based indices of matrice location
+; for each part: [TopLeft, TopRight, BottomLeft, BottomRight]
+;
 ; 1    2    3
 ; 4    5    6
 ; 7    8    9
@@ -119,7 +118,6 @@ XPctOkBtn := 2396/3840
 YPctOkBtn := 1111/2160
 XPctOkBtnAlone := 2270/3840
 YPctOkBtnAlone := 1136/2160
-
 XPctApproveBtn := 2200/3840
 YPctApproveBtn := 1544/2160
 
@@ -135,7 +133,6 @@ XPctSelectMatriceCol1 := 217/3840
 XPctSelectMatriceCol2 := 637/3840
 YPctSelectMatriceRow1 := 561/2160
 YPctSelectMatriceRow2 := 958/2160
-
 
 ; Relic
 YPctRelicSelectRow := 1070/1440
@@ -164,15 +161,15 @@ XPctSimulacraSpecialSkin := 605/3840
 YPctSimulacraSpecialSkin := 1622/2160
 
 ; Quick Swap Weapon
-NumClickSwapToWeaponSet := 3
+NumClickSwapToWeaponSet := 2
 
 ; Scrolling (Relic, Simulacra)
-NumScrollDn4NextSimulacraPage := 14
+NumScrollSimulacraPage := 14
 NumScrollRelic := 55
 
 ; Delay
-DelayClick := 492
-DelayClickQuick := 352
+DelayClick := 472
+DelayClickQuick := 312
 DelayClickVeryQuick := 172
 DelayRelicSet := 300
 DelayEquipMatrice := 212
@@ -185,7 +182,6 @@ DelayOpenWeaponMenuQuick := 492
 DelayOpenEquipMenu := 892
 DelayClickWeaponSet := 812
 DelayScroll := 35
-
 
 ; Functions
 MoveMouseToXPctYPct(XPct, YPct) {
@@ -459,13 +455,13 @@ GetSelectSimulacraYPct(Id) {
 }
 
 ScrollDownBeforeSelectSimulacra(Id) {
-	global NumScrollDn4NextSimulacraPage
+	global NumScrollSimulacraPage
 	global XPctSelectSimulacraCol1
 	global YPctSelectSimulacraRow1
 	global DelayScroll
 	global DelayGeneralVeryLong
 
-	NumScroll := Floor((Id-1)/6)*NumScrollDn4NextSimulacraPage
+	NumScroll := Floor((Id-1)/6)*NumScrollSimulacraPage
 
 	If (NumScroll > 0) {
 		MoveMouseToXPctYPct(XPctSelectSimulacraCol1, YPctSelectSimulacraRow1)
