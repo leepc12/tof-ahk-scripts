@@ -1,4 +1,4 @@
-; ToF Weapon/Equipment/Matrice/Simulacra Swapper v4.8
+; ToF Weapon/Equipment/Matrice/Simulacra Swapper v4.9
 ; Discord: Py-ra#4480
 ;
 ; This script works only with FHD, QHD and 4k resolution
