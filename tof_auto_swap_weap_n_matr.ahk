@@ -1,8 +1,11 @@
-; ToF Weapon/Equipment/Matrice/Simulacra Swapper v4.9
+; ToF Weapon/Equipment/Matrice/Simulacra Swapper v5.0
 ; Discord: Py-ra#4480
 ;
 ; This script works only with FHD, QHD and 4k resolution
 ; Press ESC to stop any running hotkey
+;
+; For controllers, best works with this reWASD configuration:
+; https://www.rewasd.com/community/config/0310aea0989a70bcba40a70f0694ca99
 
 #IfWinActive, ahk_exe QRSL.exe
 SendMode, Input
@@ -27,12 +30,13 @@ SetWorkingDir, %A_ScriptDir%
 ;
 ; Matrices1 and Matrices2 are 1-based indices of matrice location
 ; for each part: [TopLeft, TopRight, BottomLeft, BottomRight]
+; Set as 0 to skip swapping for a part.
 ;
 ; 1    2    3
 ; 4    5    6
 ; 7    8    9
 ; ...
-Matrices1 := [1,3,1,3] ; Edit this array for F5
+Matrices1 := [1,3,1,4] ; Edit this array for F5
 Matrices2 := [4,4,3,2] ; Edit this array for F6
 Matrices3 := [3,1,2,1] ; Edit this array for F7
 
@@ -667,13 +671,21 @@ EquipMatrices1(Swap=False) {
 	ClickMatriceIcon()
 	ClickLargeViewMatriceTL()
 	Sleep DelayEquipMatrice
-	ClickSelectMatriceAndAffixAndOk(Matrices1[1], Swap)
-	ClickSmallViewMatriceTR()
-	ClickSelectMatriceAndAffixAndOk(Matrices1[2], Swap)
-	ClickSmallViewMatriceBL()
-	ClickSelectMatriceAndAffixAndOk(Matrices1[3], Swap)
-	ClickSmallViewMatriceBR()
-	ClickSelectMatriceAndAffixAndOk(Matrices1[4], Swap)
+	If (Matrices1[1] > 0) {
+		ClickSelectMatriceAndAffixAndOk(Matrices1[1], Swap)
+	}
+	If (Matrices1[2] > 0) {
+		ClickSmallViewMatriceTR()
+		ClickSelectMatriceAndAffixAndOk(Matrices1[2], Swap)
+	}
+	If (Matrices1[3] > 0) {
+		ClickSmallViewMatriceBL()
+		ClickSelectMatriceAndAffixAndOk(Matrices1[3], Swap)
+	}
+	If (Matrices1[4] > 0) {
+		ClickSmallViewMatriceBR()
+		ClickSelectMatriceAndAffixAndOk(Matrices1[4], Swap)
+	}
 	ClickBackBtn()
 	ClickBackBtn()
 }
@@ -684,13 +696,21 @@ EquipMatrices2(Swap=False) {
 	ClickMatriceIcon()
 	ClickLargeViewMatriceTL()
 	Sleep DelayEquipMatrice
-	ClickSelectMatriceAndAffixAndOk(Matrices2[1], Swap)
-	ClickSmallViewMatriceTR()
-	ClickSelectMatriceAndAffixAndOk(Matrices2[2], Swap)
-	ClickSmallViewMatriceBL()
-	ClickSelectMatriceAndAffixAndOk(Matrices2[3], Swap)
-	ClickSmallViewMatriceBR()
-	ClickSelectMatriceAndAffixAndOk(Matrices2[4], Swap)
+	If (Matrices2[1] > 0) {
+		ClickSelectMatriceAndAffixAndOk(Matrices2[1], Swap)
+	}
+	If (Matrices2[2] > 0) {
+		ClickSmallViewMatriceTR()
+		ClickSelectMatriceAndAffixAndOk(Matrices2[2], Swap)
+	}
+	If (Matrices2[3] > 0) {
+		ClickSmallViewMatriceBL()
+		ClickSelectMatriceAndAffixAndOk(Matrices2[3], Swap)
+	}
+	If (Matrices2[4] > 0) {
+		ClickSmallViewMatriceBR()
+		ClickSelectMatriceAndAffixAndOk(Matrices2[4], Swap)
+	}
 	ClickBackBtn()
 	ClickBackBtn()
 }
@@ -701,13 +721,21 @@ EquipMatrices3(Swap=False) {
 	ClickMatriceIcon()
 	ClickLargeViewMatriceTL()
 	Sleep DelayEquipMatrice
-	ClickSelectMatriceAndAffixAndOk(Matrices3[1], Swap)
-	ClickSmallViewMatriceTR()
-	ClickSelectMatriceAndAffixAndOk(Matrices3[2], Swap)
-	ClickSmallViewMatriceBL()
-	ClickSelectMatriceAndAffixAndOk(Matrices3[3], Swap)
-	ClickSmallViewMatriceBR()
-	ClickSelectMatriceAndAffixAndOk(Matrices3[4], Swap)
+	If (Matrices3[1] > 0) {
+		ClickSelectMatriceAndAffixAndOk(Matrices3[1], Swap)
+	}
+	If (Matrices3[2] > 0) {
+		ClickSmallViewMatriceTR()
+		ClickSelectMatriceAndAffixAndOk(Matrices3[2], Swap)
+	}
+	If (Matrices3[3] > 0) {
+		ClickSmallViewMatriceBL()
+		ClickSelectMatriceAndAffixAndOk(Matrices3[3], Swap)
+	}
+	If (Matrices3[4] > 0) {
+		ClickSmallViewMatriceBR()
+		ClickSelectMatriceAndAffixAndOk(Matrices3[4], Swap)
+	}
 	ClickBackBtn()
 	ClickBackBtn()
 }
