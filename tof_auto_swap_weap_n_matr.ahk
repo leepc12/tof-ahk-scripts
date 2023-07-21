@@ -1,84 +1,88 @@
-; ToF Weapon/Equipment/Matrice/Simulacra Swapper v5.0
+; ToF Weapon/Equipment/Matrice/Simulacra Swapper v8.0
 ; Discord: Py-ra#4480
 ;
 ; This script works only with FHD, QHD and 4k resolution
 ; Press ESC to stop any running hotkey
-;
-; For controllers, best works with this reWASD configuration:
-; https://www.rewasd.com/community/config/0310aea0989a70bcba40a70f0694ca99
 
 #IfWinActive, ahk_exe QRSL.exe
 SendMode, Input
 SetWorkingDir, %A_ScriptDir%
 
-;;;; Run weapon/matrice/equipment swap combo
-; - F3: Run combo1
-; - F4: Run combo2
-;
-; Search for "F3::" and "F4::" in this script and build your own combo
-; using functions. Code lines are very readable and self-explanatory
+;;;; Swap-to matrice preset
+; - F5: Swap to Set1 (for variables suffixed with 1)
+; - F6: Swap to Set2 (for variables suffixed with 2)
+; - F7: Swap to Set3 (for variables suffixed with 3)
+; - F8: Swap to Set4 (for variables suffixed with 4)
 
-;;;; Swap-to/Equip matrices
-; - F5: Swap to Matrices1 for a selected weapon
-; - F6: Swap to Matrices2 for a selected weapon
-; - F7: Swap to Matrices2 for a selected weapon
-; - Ctrl+F5: Equip Matrices1 for a selected weapon
-; - Ctrl+F6: Equip Matrices2 for a selected weapon
-; - Ctrl+F7: Equip Matrices3 for a selected weapon
-;
-; "Swap-to" action does "Equip" and then click on "Ok" button
-;
-; Matrices1 and Matrices2 are 1-based indices of matrice location
-; for each part: [TopLeft, TopRight, BottomLeft, BottomRight]
-; Set as 0 to skip swapping for a part.
-;
-; 1    2    3
-; 4    5    6
-; 7    8    9
-; ...
-Matrices1 := [1,3,1,4] ; Edit this array for F5
-Matrices2 := [4,4,3,2] ; Edit this array for F6
-Matrices3 := [3,1,2,1] ; Edit this array for F7
+;;;; Matrice preset for each weapon (1,2,3). No swap if 1
+MatricePreset1 := [1, 1, 1]
+MatricePreset2 := [1, 1, 2]
+MatricePreset3 := [2, 2, 1]
+MatricePreset4 := [1, 1, 1]
+
+;;;; Fiona weapon location and skill set ID. Ignored if 0
+; Set it as 0 if there is no Fiona in a team
+FionaLocAndSkillSet1 := [1, 1] ; Fiona is 1st weapon and using skill set 1
+FionaLocAndSkillSet2 := [1, 2]
+FionaLocAndSkillSet3 := [2, 3]
+FionaLocAndSkillSet4 := [0, 0]
+
+;;;; Yulan weapon location and skill set ID (1: Martial, 2: Sweeper)
+; Set it as 0 if there is no Yulan in a team
+; Currently there is no way to choose yulan skill
+YulanLoc1 := 2
+YulanLoc2 := 3
+YulanLoc3 := 0
+YulanLoc4 := 2
+
+;;;; Equipment (equipment set in Backpack menu)
+EquipmentSet1 := 1
+EquipmentSet2 := 1
+EquipmentSet3 := 2
+EquipmentSet4 := 1
 
 ;;;; Simulacra Trait
-; - Ctrl+F3: Use trait of SimulacraTrait1
-; - Ctrl+F4: Use trait of SimulacraTrait2
-; - Ctrl+Alt+F3: Use trait of SimulacraTrait3
-; - Ctrl+Alt+F4: Use trait of SimulacraTrait4
-;
 ; SimulacraTrait1 and SimulacraTrait2 are 1-based indices of
-;
 ; Simulacra on the game UI. Script will scroll down if index > 6
 ; 1    2    3
 ; 4    5    6
 ; 7    8    9 (script will scroll down)
 ; ...
-SimulacraTrait1 := 6 ; Edit this for Ctrl+F3
-SimulacraTrait2 := 8 ; Edit this for Ctrl+F4
-SimulacraTrait3 := 4 ; Edit this for Ctrl+Alt+F3
-SimulacraTrait4 := 11 ; Edit this for Ctrl+Alt+F4
-
-;;;; Simulacra skin
-; - F9: Change to Simulacra1's skin
-; - F10: Change to Simulacra2's skin
-;
-; SkinType: "A0", "A3" or "Special" (e.g. Saki wedding, Lin bikini)
-SimulacraSkin1 := 3	; Edit this for F9
-SimulacraSkinType1 := "Special" ; Edit this for F9
-SimulacraSkin2 := 1 ; Edit this for F10
-SimulacraSkinType2 := "Special" ; Edit this for F10
+SimulacraTrait1 := 1
+SimulacraTrait2 := 2
+SimulacraTrait3 := 2
+SimulacraTrait4 := 2
+; Need a dummy trait ID. Make sure that dummy's 4000 trait is unlocked
+SimulacraTraitDummy := 3
 
 ;;;; Other QoL hotkeys
-; - F8: Open Relic Set2 and scroll to right
+; - F9: Open Relic Set2 and scroll to right
 ; - F12: Click on team flag to show team HP
 ; - Ctrl+F12: Quick exit instance
-; - Pause: Click on the center of battle result screen
 ; - Mouse Mid-Click: Toggle hold-Alt
 
+;;;; Key spammer
+; - F3: F spam
+; - F4: FCN auto (make sure to use all FC charges b4 using this)
+
+;;;; Simulacra skin
+; - Ctrl+F3: Change to Simulacra1's skin
+; - Ctrl+F4: Change to Simulacra2's skin
+;
+; SkinType: "A0", "A3" or "Special" (e.g. Saki wedding, Lin bikini)
+SimulacraSkin1 := 1	; Edit this for Ctrl+F3
+SimulacraSkinType1 := "A3" ; Edit this for Ctrl+F3
+SimulacraSkin2 := 2 ; Edit this for Ctrl+F4
+SimulacraSkinType2 := "Special" ; Edit this for Ctrl+F4
+
+;;;;;;;;;;;;;;;;;;;; DEPRECATED ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;; DO NOT MODIFY ANYTHING BELOW ;;;;;;;;;;;;;;;;;;;;
+Matrices1 := [2,4,2,3] ; Edit this array for F5
+Matrices2 := [3,5,3,4] ; Edit this array for F6
+Matrices3 := [1,2,1,2] ; Edit this array for F7
+Matrices4 := [6,6,5,7] ; Edit this array for F8
 
 ;;;;;;;;;;;;;;;;;;; DO NOT MODIFY ANYTHING BELOW ;;;;;;;;;;;;;;;;;;;;
-AltStatus := False
-
 ; General
 XPctBackBtn := 100/3840
 YPctBackBtn := 100/2160
@@ -90,6 +94,8 @@ XPctResultScreenCenter := 3240/3840
 YPctResultScreenCenter := 1591/2160
 XPctMapProgess := 3592/3840
 YPctMapProgess := 2048/2160
+XPctMenuButton := 3743/3840
+YPctMenuButton := 79/2160
 
 ; Weapon
 XPctWeaponSet := 336/3840
@@ -112,8 +118,8 @@ XPctEquipSet5 := 1165/3840
 YPctEquipSet := 1800/2160
 
 ; Matrice
-XPctMatriceIcon := 3654/3840
-YPctMatriceIcon := 596/2160
+XPctMatriceIcon := 3658/3840
+YPctMatriceIcon := 524/2160
 XPctLargeViewMatriceTL := 831/3840
 YPctLargeViewMatriceTL := 476/2160
 XPctAffixBtn := 2916/3840
@@ -124,6 +130,12 @@ XPctOkBtnAlone := 2270/3840
 YPctOkBtnAlone := 1136/2160
 XPctApproveBtn := 2200/3840
 YPctApproveBtn := 1544/2160
+XPctUsePreset1Btn := 3641/3840
+YPctUsePreset1Btn := 547/2160
+XPctUsePreset2Btn := 3641/3840
+YPctUsePreset2Btn := 892/2160
+XPctUsePreset3Btn := 3641/3840
+YPctUsePreset3Btn := 1238/2160
 
 XPctSmallViewMatriceLeft := 1500/3840
 XPctSmallViewMatriceRight := 2510/3840
@@ -131,6 +143,18 @@ YPctSmallViewMatriceTop := 650/2160
 YPctSmallViewMatriceBottom := 1570/2160
 XPctRecommendedMatrix := 3224/3840
 YPctRecommendedMatrix := 1916/2160
+XPctPresetButton:=3533/3840
+YPctPresetButton:=1917/2160
+XPctSkillsButton := 2793/3840
+YPctSkillsButton := 1395/2160
+XPctSkillsSettingButton := 3114/3840
+YPctSkillsSettingButton := 475/2160
+XPctFionaSkill1 := 1875/3840
+XPctFionaSkill2 := 2139/3840
+XPctFionaSkill3 := 2406/3840
+XPctFionaSkill4 := 2670/3840
+XPctFionaSkill5 := 2978/3840
+YPctFionaSkill := 1308/2160
 XPctQuickAffixSet1 := 2859/3840
 YPctQuickAffixSet1 := 735/2160
 XPctSelectMatriceCol1 := 217/3840
@@ -164,26 +188,38 @@ YPctSimulacraA3Skin := 1180/2160
 XPctSimulacraSpecialSkin := 605/3840
 YPctSimulacraSpecialSkin := 1622/2160
 
+; Combat
+XPctChallenge := 220/3840
+YPctChallenge := 1308/2160
+XPctFrontierClash := 2013/3840
+YPctFrontierClash := 421/2160
+XPctGo := 2830/3840
+YPctGo := 1594/2160
+XPctEnter := 1372/3840
+YPctEnter := 1165/2160
+XPctAutoFight := 2329/3840
+YPctAutoFight := 1854/2160
+
 ; Quick Swap Weapon
 NumClickSwapToWeaponSet := 2
 
 ; Scrolling (Relic, Simulacra)
 NumScrollSimulacraPage := 14
-NumScrollRelic := 55
+NumScrollRelic := 35
 
 ; Delay
 DelayClick := 472
 DelayClickQuick := 312
-DelayClickVeryQuick := 172
+DelayClickVeryQuick := 272
 DelayRelicSet := 300
 DelayEquipMatrice := 212
 DelayGeneralVeryLong := 990
 DelayGeneralLong := 502
 DelayGeneralShort := 102
 DelayClickSwapToWeaponSet := 328
-DelayOpenWeaponMenu := 592
+DelayOpenWeaponMenu := 692
 DelayOpenWeaponMenuQuick := 492
-DelayOpenEquipMenu := 892
+DelayOpenEquipMenu := 1592
 DelayClickWeaponSet := 812
 DelayScroll := 35
 
@@ -234,7 +270,7 @@ OpenWeaponMenuQuick() {
 	Sleep DelayOpenWeaponMenuQuick
 }
 
-SwapToWeaponSet(XPct, YPct) {
+SwapToWeaponSetCoord(XPct, YPct) {
 	global NumClickSwapToWeaponSet
 	global DelayClickSwapToWeaponSet
 	OpenWeaponMenuQuick()
@@ -244,130 +280,114 @@ SwapToWeaponSet(XPct, YPct) {
 		MouseClick, Left
 		Sleep DelayClickSwapToWeaponSet
 	}
+	ClickBackBtn()
 }
 
-ClickWeaponSet1() {
+ClickWeaponSet(i) {
 	global XPctWeaponSet
 	global YPctWeaponSet1
-	global DelayClickWeaponSet
-	ClickOnXPctYPct(XPctWeaponSet, YPctWeaponSet1)
-	Sleep DelayClickWeaponSet
-}
-
-ClickWeaponSet2() {
-	global XPctWeaponSet
 	global YPctWeaponSet2
-	global DelayClickWeaponSet
-	ClickOnXPctYPct(XPctWeaponSet, YPctWeaponSet2)
-	Sleep DelayClickWeaponSet
-}
-
-ClickWeaponSet3() {
-	global XPctWeaponSet
 	global YPctWeaponSet3
-	global DelayClickWeaponSet
-	ClickOnXPctYPct(XPctWeaponSet, YPctWeaponSet3)
-	Sleep DelayClickWeaponSet
-}
-
-ClickWeaponSet4() {
-	global XPctWeaponSet
 	global YPctWeaponSet4
-	global DelayClickWeaponSet
-	ClickOnXPctYPct(XPctWeaponSet, YPctWeaponSet4)
-	Sleep DelayClickWeaponSet
-}
-
-ClickWeaponSet5() {
-	global XPctWeaponSet
 	global YPctWeaponSet5
 	global DelayClickWeaponSet
-	ClickOnXPctYPct(XPctWeaponSet, YPctWeaponSet5)
+	If (i=1) {
+		ClickOnXPctYPct(XPctWeaponSet, YPctWeaponSet1)
+	}
+	Else If (i=2) {
+		ClickOnXPctYPct(XPctWeaponSet, YPctWeaponSet2)
+	}
+	Else If (i=3) {
+		ClickOnXPctYPct(XPctWeaponSet, YPctWeaponSet3)
+	}
+	Else If (i=4) {
+		ClickOnXPctYPct(XPctWeaponSet, YPctWeaponSet4)
+	}
+	Else If (i=5) {
+		ClickOnXPctYPct(XPctWeaponSet, YPctWeaponSet5)
+	}
 	Sleep DelayClickWeaponSet
 }
 
-ClickEquipSet1() {
+ClickEquipSet(i) {
 	global XPctEquipSet1
-	global YPctEquipSet
-	ClickOnXPctYPct(XPctEquipSet1, YPctEquipSet)
-}
-
-ClickEquipSet2() {
 	global XPctEquipSet2
-	global YPctEquipSet
-	ClickOnXPctYPct(XPctEquipSet2, YPctEquipSet)
-}
-
-ClickEquipSet3() {
 	global XPctEquipSet3
-	global YPctEquipSet
-	ClickOnXPctYPct(XPctEquipSet3, YPctEquipSet)
-}
-
-ClickEquipSet4() {
 	global XPctEquipSet4
-	global YPctEquipSet
-	ClickOnXPctYPct(XPctEquipSet4, YPctEquipSet)
-}
-
-ClickEquipSet5() {
 	global XPctEquipSet5
 	global YPctEquipSet
-	ClickOnXPctYPct(XPctEquipSet5, YPctEquipSet)
+	If (i=1) {
+		ClickOnXPctYPct(XPctEquipSet1, YPctEquipSet)
+	}
+	Else If (i=2) {
+		ClickOnXPctYPct(XPctEquipSet2, YPctEquipSet)
+	}
+	Else If (i=3) {
+		ClickOnXPctYPct(XPctEquipSet3, YPctEquipSet)
+	}
+	Else If (i=4) {
+		ClickOnXPctYPct(XPctEquipSet4, YPctEquipSet)
+	}
+	Else If (i=5) {
+		ClickOnXPctYPct(XPctEquipSet5, YPctEquipSet)
+	}
 }
 
-SwapToWeaponSet1() {
+SwapToWeaponSet(i) {
 	global XPctWeaponSet
 	global YPctWeaponSet1
-	SwapToWeaponSet(XPctWeaponSet, YPctWeaponSet1)
-}
-
-SwapToWeaponSet2() {
-	global XPctWeaponSet
 	global YPctWeaponSet2
-	SwapToWeaponSet(XPctWeaponSet, YPctWeaponSet2)
-}
-
-SwapToWeaponSet3() {
-	global XPctWeaponSet
 	global YPctWeaponSet3
-	SwapToWeaponSet(XPctWeaponSet, YPctWeaponSet3)
+	global YPctWeaponSet4
+	global YPctWeaponSet5
+
+	If (i=1) {
+		SwapToWeaponSetCoord(XPctWeaponSet, YPctWeaponSet1)
+	}
+	Else If (i=2) {
+		SwapToWeaponSetCoord(XPctWeaponSet, YPctWeaponSet2)
+	}
+	Else If (i=3) {
+		SwapToWeaponSetCoord(XPctWeaponSet, YPctWeaponSet3)
+	}
+	Else If (i=4) {
+		SwapToWeaponSetCoord(XPctWeaponSet, YPctWeaponSet4)
+	}
+	Else If (i=5) {
+		SwapToWeaponSetCoord(XPctWeaponSet, YPctWeaponSet5)
+	}
 }
 
-ClickWeapon1() {
+ClickWeapon(i) {
 	global XPctWeapon1
-	global YPctWeapon
-	ClickOnXPctYPct(XPctWeapon1, YPctWeapon)
-}
-
-ClickWeapon2() {
 	global XPctWeapon2
-	global YPctWeapon
-	ClickOnXPctYPct(XPctWeapon2, YPctWeapon)
-}
-
-ClickWeapon3() {
 	global XPctWeapon3
 	global YPctWeapon
-	ClickOnXPctYPct(XPctWeapon3, YPctWeapon)
+	If (i=1) {
+		ClickOnXPctYPct(XPctWeapon1, YPctWeapon)
+	}
+	Else If (i=2) {
+		ClickOnXPctYPct(XPctWeapon2, YPctWeapon)
+	}
+	Else If (i=3) {
+		ClickOnXPctYPct(XPctWeapon3, YPctWeapon)
+	}
 }
 
-MoveMouseToWeapon1() {
+MoveMouseToWeapon(i) {
 	global XPctWeapon1
-	global YPctWeapon
-	MoveMouseToXPctYPct(XPctWeapon1, YPctWeapon)
-}
-
-MoveMouseToWeapon2() {
 	global XPctWeapon2
-	global YPctWeapon
-	MoveMouseToXPctYPct(XPctWeapon2, YPctWeapon)
-}
-
-MoveMouseToWeapon3() {
 	global XPctWeapon3
 	global YPctWeapon
-	MoveMouseToXPctYPct(XPctWeapon3, YPctWeapon)
+	If (i=1) {
+		MoveMouseToXPctYPct(XPctWeapon1, YPctWeapon)
+	}
+	Else If (i=2) {
+		MoveMouseToXPctYPct(XPctWeapon2, YPctWeapon)
+	}
+	Else If (i=3) {
+		MoveMouseToXPctYPct(XPctWeapon3, YPctWeapon)
+	}
 }
 
 ClickLargeViewMatriceTL() {
@@ -382,10 +402,46 @@ ClickRecommendedMatrix() {
 	ClickOnXPctYPct(XPctRecommendedMatrix, YPctRecommendedMatrix)
 }
 
+ClickPresetButton() {
+	global XPctPresetButton
+	global YPctPresetButton
+	ClickOnXPctYPct(XPctPresetButton, YPctPresetButton)	
+}
+
+ClickSkillsButton() {
+	global XPctSkillsButton
+	global YPctSkillsButton
+	ClickOnXPctYPct(XPctSkillsButton, YPctSkillsButton)		
+}
+
+ClickSkillsSettingButton() {
+	global XPctSkillsSettingButton
+	global YPctSkillsSettingButton
+	ClickOnXPctYPct(XPctSkillsSettingButton, YPctSkillsSettingButton)		
+}
+
 ClickQuickAffixSet1() {
 	global XPctQuickAffixSet1
 	global YPctQuickAffixSet1
 	ClickOnXPctYPct(XPctQuickAffixSet1, YPctQuickAffixSet1)
+}
+
+ClickUsePreset1Button() {
+	global XPctUsePreset1Btn
+	global YPctUsePreset1Btn
+	ClickOnXPctYPct(XPctUsePreset1Btn, YPctUsePreset1Btn)
+}
+
+ClickUsePreset2Button() {
+	global XPctUsePreset2Btn
+	global YPctUsePreset2Btn
+	ClickOnXPctYPct(XPctUsePreset2Btn, YPctUsePreset2Btn)
+}
+
+ClickUsePreset3Button() {
+	global XPctUsePreset3Btn
+	global YPctUsePreset3Btn
+	ClickOnXPctYPct(XPctUsePreset3Btn, YPctUsePreset3Btn)
 }
 
 ClickBackBtn() {
@@ -531,6 +587,16 @@ PressEsc() {
 	Sleep DelayGeneralLong
 }
 
+AltClickMenuButton() {
+	global XPctMenuButton
+	global YPctMenuButton
+	global DelayGeneralShort
+	Send {Alt Down}
+	Sleep DelayGeneralShort
+	ClickOnXPctYPctQuick(XPctMenuButton, YPctMenuButton)
+	Send {Alt Up}
+}
+
 AltClickTeamFlag() {
 	global XPctTeamFlag
 	global YPctTeamFlag
@@ -605,7 +671,8 @@ ClickRelicSelectRowAndScrollRight() {
 
 RelicSet2() {
 	global DelayRelicSet
-	PressEsc()
+	; PressEsc()
+	AltClickMenuButton()
 	Sleep DelayRelicSet
 	ClickRelic()
 	ClickRelicDeploy()
@@ -615,7 +682,8 @@ RelicSet2() {
 
 RelicSet3() {
 	global DelayRelicSet
-	PressEsc()
+	; PressEsc()
+	AltClickMenuButton()
 	Sleep DelayRelicSet
 	ClickRelic()
 	ClickRelicDeploy()
@@ -638,7 +706,9 @@ ClickSimulacraBtn() {
 ClickSimulacraTraitToggle() {
 	global XPctSimulacraTraitToggle
 	global YPctSimulacraTraitToggle
+	Sleep 300
 	ClickOnXPctYPct(XPctSimulacraTraitToggle, YPctSimulacraTraitToggle)
+	Sleep 300
 }
 
 ClickSimulacraA3Skin() {
@@ -663,6 +733,10 @@ SwapToMatrices2() {
 
 SwapToMatrices3() {
 	EquipMatrices3(True)
+}
+
+SwapToMatrices4() {
+	EquipMatrices4(True)
 }
 
 EquipMatrices1(Swap=False) {
@@ -740,6 +814,31 @@ EquipMatrices3(Swap=False) {
 	ClickBackBtn()
 }
 
+EquipMatrices4(Swap=False) {
+	global DelayEquipMatrice
+	global Matrices4
+	ClickMatriceIcon()
+	ClickLargeViewMatriceTL()
+	Sleep DelayEquipMatrice
+	If (Matrices4[1] > 0) {
+		ClickSelectMatriceAndAffixAndOk(Matrices4[1], Swap)
+	}
+	If (Matrices4[2] > 0) {
+		ClickSmallViewMatriceTR()
+		ClickSelectMatriceAndAffixAndOk(Matrices4[2], Swap)
+	}
+	If (Matrices4[3] > 0) {
+		ClickSmallViewMatriceBL()
+		ClickSelectMatriceAndAffixAndOk(Matrices4[3], Swap)
+	}
+	If (Matrices4[4] > 0) {
+		ClickSmallViewMatriceBR()
+		ClickSelectMatriceAndAffixAndOk(Matrices4[4], Swap)
+	}
+	ClickBackBtn()
+	ClickBackBtn()
+}
+
 SwapToRecommendedMatrix1() {
 	EquipRecommendedMatrix1(True)
 }
@@ -754,110 +853,211 @@ EquipRecommendedMatrix1(Swap=False) {
 	ClickBackBtn()
 }
 
+EquipMatricePreset(i) {
+	ClickMatriceIcon()
+	ClickPresetButton()
+	Sleep 700
+	If (i = 1) {
+		ClickUsePreset1Button()
+	}
+	Else If (i = 2) {
+		ClickUsePreset2Button()
+	}
+	Else If (i = 3) {
+		ClickUsePreset3Button()
+	}
+	Sleep 700
+	ClickOk()
+	ClickBackBtn()
+}
 
+ClickFionaSkill(i) {
+	global XPctFionaSkill1
+	global XPctFionaSkill2
+	global XPctFionaSkill3
+	global XPctFionaSkill4
+	global XPctFionaSkill5
+	global YPctFionaSkill
 
-; Weapon/Equip/Matrice swap combo
-;
-; "Equip-" functions affix matrices without clicking on Ok button
-; "SwapTo-" functions affix matrices and click on Ok button
-; You can also use EquipRecommendedMatrix1()
+	If (i=1) {
+		ClickOnXPctYPct(XPctFionaSkill1, YPctFionaSkill)
+	}
+	Else If (i=2) {
+		ClickOnXPctYPct(XPctFionaSkill2, YPctFionaSkill)
+	}
+	Else If (i=3) {
+		ClickOnXPctYPct(XPctFionaSkill3, YPctFionaSkill)
+	}
+	Else If (i=4) {
+		ClickOnXPctYPct(XPctFionaSkill4, YPctFionaSkill)
+	}
+	Else If (i=5) {
+		ClickOnXPctYPct(XPctFionaSkill5, YPctFionaSkill)
+	}
+}
+
+ShowYulanSkillSetting(loc) {
+	If (loc>0) {
+		ClickWeapon(loc)
+		ClickSkillsButton()
+		ClickSkillsSettingButton()
+	}
+	Sleep 500
+}
+
+ChooseFionaSkill(loc, i) {
+	If (loc>0) {
+		ClickWeapon(loc)
+		ClickSkillsButton()
+		ClickSkillsSettingButton()
+		ClickFionaSkill(i)
+		PressEsc()
+	}
+	Sleep 500
+}
 
 F3::
-OpenWeaponMenu()
-ClickWeaponSet1()
+SendInput {LALT Down}
+Sleep 100
+ClickOnXPctYPct(3403/3840,1794/2160)
+Sleep 100
+SendInput {LALT Up}
+; While True {
+; 	ControlSend,, {2},Tower of Fantasy
+; 	Sleep 1500
+; 	ControlSend,, {3},Tower of Fantasy
+; 	Sleep 1500
+; 	ControlSend,, {1},Tower of Fantasy
+; 	Sleep 1000
+; 	Loop 20 {
+; 		ControlSend,, {LButton}, Tower of Fantasy
+; 		Sleep 200
+; 	}
+; 	; ControlSend,, {1},Tower of Fantasy
+; 	; Sleep 27221
+; 	; ControlSend,, {f},Tower of Fantasy
+; 	; Sleep 12221
+; 	; ControlSend,, {LButton Down},Tower of Fantasy
+; 	Sleep 4221
+; }
 
-ClickWeapon2()
-SwapToMatrices1()
-ClickWeapon1()
-SwapToMatrices2()
-
-OpenEquipMenu()
-ClickEquipSet1()
-ClickBackBtn()
 return
 
 F4::
-OpenWeaponMenu()
-ClickWeaponSet2()
+; SendInput {LALT Down}
+; Sleep 100
+; ClickOnXPctYPct(3729/3840,1974/2160)
+; Sleep 100
+; SendInput {LALT Up}
 
-ClickWeapon2()
-SwapToMatrices1()
-ClickWeapon1()
-SwapToMatrices2()
+;FCN Auto (solo)
+While True {
+	OpenCombatMenu()
+	ClickChallenge()
+	ClickFrontierClash()
+	ClickGo()
+	ClickEnter()
+	Sleep 28000
+	ClickAutoFight()
+	MoveW(2500)
+	MoveA(1800)
+	MoveS(1200)
+	Sleep 1000
+	MoveW(800)
+	PressF()
+	MoveA(600)
+	PressF()
+	MoveW(300)
+	PressF()
+	MoveA(300)
+	PressF()
 
-OpenEquipMenu()
-ClickEquipSet2()
-ClickBackBtn()
-return
-
-; Simulacra Trait
-^F3::
-VK19 & F3::
-OpenWeaponMenuQuick()
-ClickSimulacra()
-ClickSelectSimulacra(SimulacraTrait1)
-ClickSimulacraTraitToggle()
-ClickBackBtn()
-return
-
-^F4::
-VK19 & F4::
-OpenWeaponMenuQuick()
-ClickSimulacra()
-ClickSelectSimulacra(SimulacraTrait2)
-ClickSimulacraTraitToggle()
-ClickBackBtn()
-return
-
-^!F3::
-OpenWeaponMenuQuick()
-ClickSimulacra()
-ClickSelectSimulacra(SimulacraTrait3)
-ClickSimulacraTraitToggle()
-ClickBackBtn()
+	Sleep 450000
+	; Sleep 550000
+}
 return
 
-^!F4::
-OpenWeaponMenuQuick()
-ClickSimulacra()
-ClickSelectSimulacra(SimulacraTrait4)
-ClickSimulacraTraitToggle()
-ClickBackBtn()
-return
+OpenCombatMenu() {
+	SendInput {LALT Down}
+	Sleep 100
+	SendInput {3}
+	Sleep 100
+	SendInput {LALT Up}
+	Sleep 1000
+}
 
-; Swap Matrices
-F5::
-SwapToMatrices1()
-return
-^F5::
-VK19 & F5::
-EquipMatrices1()
-return
+ClickChallenge() {
+	global XPctChallenge
+	global YPctChallenge
+	ClickOnXPctYPct(XPctChallenge, YPctChallenge)
+	Sleep 1000
+}
 
-F6::
-SwapToMatrices2()
-return
-^F6::
-VK19 & F6::
-EquipMatrices2()
-return
+ClickFrontierClash() {
+	global XPctFrontierClash
+	global YPctFrontierClash
+	ClickOnXPctYPct(XPctFrontierClash, YPctFrontierClash)
+	Sleep 1000
+}
 
-F7::
-SwapToMatrices3()
-return
-^F7::
-VK19 & F7::
-EquipMatrices3()
-; SwapToRecommendedMatrix1()
-return
+ClickGo() {
+	global XPctGo
+	global YPctGo
+	ClickOnXPctYPct(XPctGo, YPctGo)
+	Sleep 1000
+}
 
-; Relic
-F8::
-RelicSet2()
-return
+ClickEnter() {
+	global XPctEnter
+	global YPctEnter
+	ClickOnXPctYPct(XPctEnter, YPctEnter)
+	Sleep 1000
+}
+
+MoveW(ms) {
+	SendInput {w Down}
+	Sleep ms
+	SendInput {w Up}
+}
+
+MoveA(ms) {
+	SendInput {a Down}
+	Sleep ms
+	SendInput {a Up}
+}
+
+MoveS(ms) {
+	SendInput {s Down}
+	Sleep ms
+	SendInput {s Up}
+}
+
+MoveD(ms) {
+	SendInput {d Down}
+	Sleep ms
+	SendInput {d Up}
+}
+
+PressF() {
+	Sleep 1000
+	SendInput {f}	
+	Sleep 1000
+}
+
+ClickAutoFight() {
+	global XPctAutoFight
+	global YPctAutoFight
+	SendInput {LALT Down}
+	Sleep 100
+	ClickOnXPctYPct(XPctAutoFight, YPctAutoFight)
+	Sleep 100
+	SendInput {LALT Up}
+	Sleep 1000
+}
 
 ; Simulacra skin
-F9::
+^F3::
+VK19 & F3::
 OpenWeaponMenuQuick()
 ClickSimulacra()
 ClickSelectSimulacra(SimulacraSkin1)
@@ -871,7 +1071,8 @@ ClickSimulacraBtn()
 ClickBackBtn()
 return
 
-F10::
+^F4::
+VK19 & F4::
 OpenWeaponMenuQuick()
 ClickSimulacra()
 ClickSelectSimulacra(SimulacraSkin2)
@@ -885,6 +1086,147 @@ ClickSimulacraBtn()
 ClickBackBtn()
 return
 
+F5::
+OpenEquipMenu()
+ClickEquipSet(EquipmentSet1)
+ClickSimulacra()
+ClickSelectSimulacra(SimulacraTraitDummy)
+ClickSimulacraTraitToggle()
+ClickSelectSimulacra(SimulacraTrait1)
+ClickSimulacraTraitToggle()
+OpenWeaponMenu()
+ClickWeaponSet(1)
+if (MatricePreset1[1] > 1) {
+	ClickWeapon(1)
+	EquipMatricePreset(MatricePreset1[1])
+}
+if (MatricePreset1[2] > 1) {
+	ClickWeapon(2)
+	EquipMatricePreset(MatricePreset1[2])
+}
+if (MatricePreset1[3] > 1) {
+	ClickWeapon(3)
+	EquipMatricePreset(MatricePreset1[3])
+}
+ChooseFionaSkill(FionaLocAndSkillSet1[1], FionaLocAndSkillSet1[2])
+ShowYulanSkillSetting(YulanLoc1)
+return
+
+F6::
+OpenEquipMenu()
+ClickEquipSet(EquipmentSet2)
+ClickSimulacra()
+ClickSelectSimulacra(SimulacraTraitDummy)
+ClickSimulacraTraitToggle()
+ClickSelectSimulacra(SimulacraTrait2)
+ClickSimulacraTraitToggle()
+OpenWeaponMenu()
+ClickWeaponSet(2)
+if (MatricePreset2[1] > 1) {
+	ClickWeapon(1)
+	EquipMatricePreset(MatricePreset2[1])
+}
+if (MatricePreset2[2] > 1) {
+	ClickWeapon(2)
+	EquipMatricePreset(MatricePreset2[2])
+}
+if (MatricePreset2[3] > 1) {
+	ClickWeapon(3)
+	EquipMatricePreset(MatricePreset2[3])
+}
+ChooseFionaSkill(FionaLocAndSkillSet2[1], FionaLocAndSkillSet2[2])
+ShowYulanSkillSetting(YulanLoc2)
+return
+
+F7::
+OpenEquipMenu()
+ClickEquipSet(EquipmentSet3)
+ClickSimulacra()
+ClickSelectSimulacra(SimulacraTraitDummy)
+ClickSimulacraTraitToggle()
+ClickSelectSimulacra(SimulacraTrait3)
+ClickSimulacraTraitToggle()
+OpenWeaponMenu()
+ClickWeaponSet(3)
+if (MatricePreset3[1] > 1) {
+	ClickWeapon(1)
+	EquipMatricePreset(MatricePreset3[1])
+}
+if (MatricePreset3[2] > 1) {
+	ClickWeapon(2)
+	EquipMatricePreset(MatricePreset3[2])
+}
+if (MatricePreset3[3] > 1) {
+	ClickWeapon(3)
+	EquipMatricePreset(MatricePreset3[3])
+}
+ChooseFionaSkill(FionaLocAndSkillSet3[1], FionaLocAndSkillSet3[2])
+ShowYulanSkillSetting(YulanLoc3)
+return
+
+F8::
+OpenEquipMenu()
+ClickEquipSet(EquipmentSet4)
+ClickSimulacra()
+ClickSelectSimulacra(SimulacraTraitDummy)
+ClickSimulacraTraitToggle()
+ClickSelectSimulacra(SimulacraTrait4)
+ClickSimulacraTraitToggle()
+OpenWeaponMenu()
+ClickWeaponSet(4)
+if (MatricePreset4[1] > 1) {
+	ClickWeapon(1)
+	EquipMatricePreset(MatricePreset4[1])
+}
+if (MatricePreset4[2] > 1) {
+	ClickWeapon(2)
+	EquipMatricePreset(MatricePreset4[2])
+}
+if (MatricePreset4[3] > 1) {
+	ClickWeapon(3)
+	EquipMatricePreset(MatricePreset4[3])
+}
+ChooseFionaSkill(FionaLocAndSkillSet4[1], FionaLocAndSkillSet4[2])
+ShowYulanSkillSetting(YulanLoc4)
+return
+
+F9::
+RelicSet2()
+return
+
+; ; Simulacra Trait
+; F9::
+; OpenWeaponMenuQuick()
+; ClickSimulacra()
+; ClickSelectSimulacra(SimulacraTrait1)
+; ClickSimulacraTraitToggle()
+; ClickBackBtn()
+; return
+
+; ^!F9::
+; OpenWeaponMenuQuick()
+; ClickSimulacra()
+; ClickSelectSimulacra(SimulacraTrait3)
+; ClickSimulacraTraitToggle()
+; ClickBackBtn()
+; return
+
+; F10::
+; OpenWeaponMenuQuick()
+; ClickSimulacra()
+; ClickSelectSimulacra(SimulacraTrait2)
+; ClickSimulacraTraitToggle()
+; ClickBackBtn()
+; return
+
+; ^!F10::
+; OpenWeaponMenuQuick()
+; ClickSimulacra()
+; ClickSelectSimulacra(SimulacraTrait4)
+; ClickSimulacraTraitToggle()
+; ClickBackBtn()
+; return
+
 ; Team flag
 F12::
 AltClickTeamFlag()
@@ -896,24 +1238,18 @@ VK19 & F12::
 AltClickExitInstanceBtnAndOk()
 return
 
-; Click center of result screen
-Pause::
-AltClickResultScreenCenter()
-return
-
 ; Esc (this will stop any hotkey by reloading script)
 Esc::
 PressEsc()
 Reload
 return
 
-; Mouse middle click to hold Alt
-MButton::
-If AltStatus
-	Send {LALT down}
-Else
-	Send {LALT up}
-AltStatus := !AltStatus
+~MButton::
+Send {LALT Down}
+return
+
+~MButton Up::
+Send {LALT Up}
 return
 
 ;;;;;;;;;;; for my controller (reWASD) ;;;;;;;;;;;;;;;;
@@ -921,45 +1257,21 @@ return
 ; Quick weapon swap combo
 ^F9::
 VK19 & F9::
-SwapToWeaponSet1()
+SwapToWeaponSet(1)
 return
 ^F10::
 VK19 & F10::
-SwapToWeaponSet2()
+SwapToWeaponSet(2)
 return
 ^F11::
 VK19 & F11::
-SwapToWeaponSet3()
+SwapToWeaponSet(3)
 return
 
 ; Click Approve or Ok
 ^Backspace::
 VK19 & Backspace::
-ClickApprove()
+AltClickResultScreenCenter()
+; ClickApprove()
 ClickOk()
-return
-
-; Open map and click progress to remove stupid blue ring
-^F8::
-VK19 & F8::
-Send, {m}
-Sleep DelayOpenWeaponMenu
-ClickMapProgress()
-PressEsc()
-PressEsc()
-return
-
-; AFK Skill Spammer, press ESC to stop it
-^!F12::
-While !AltStatus {
-	Sleep 1212
-	ControlSend,, {1},Tower of Fantasy
-	Sleep 28129
-	ControlSend,, {1},Tower of Fantasy
-	Sleep 29142
-	ControlSend,, {1},Tower of Fantasy
-	Sleep 33132
-	ControlSend,, {1},Tower of Fantasy
-	Sleep 30011
-}
 return
